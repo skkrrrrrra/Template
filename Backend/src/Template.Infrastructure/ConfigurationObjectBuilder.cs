@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using Template.Domain.Configurations;
 
 namespace Infrastructure
@@ -15,7 +17,14 @@ namespace Infrastructure
         {
             return new()
             {
-                Token = _configuration.GetRequiredSection("Token").Value
+                Token = _configuration.GetRequiredSection("Token").Value,
+                ConnectionString = _configuration.GetConnectionString("PostgresConnection"),
+                Jwt = new()
+                {
+                    Issuer = _configuration["Jwt:Issuer"],
+                    Audience = _configuration["Jwt:Audience"],
+                    Key = _configuration["Jwt:Key"]
+                }
             };
         }
     }

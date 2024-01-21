@@ -12,26 +12,25 @@ using Template.Application.Responses.Auth;
 using Template.Application.Services.Base;
 using Template.Application.Services.Interfaces;
 using Template.Domain.Configurations;
-using Template.Persistence;
+using Template.Persistence.Context;
 
 namespace Template.Application.Services
 {
-    public class AuthService : Service<User>, IAuthService
+    public class AuthService : IAuthService
     {
         private readonly MainDbContext _dbContext;
-        private readonly IService<User> _usersService;
+        private readonly Service<User> _usersService;
         private readonly ConfigurationObject _configurationObject;
 
         public AuthService(
             MainDbContext dbContext,
-            IService<User> clientsService,
-            ConfigurationObject configurationObject) : base(dbContext)
+            Service<User> usersService,
+            ConfigurationObject configurationObject)
         {
             _dbContext = dbContext;
-            _usersService = clientsService;
+            _usersService = usersService;
             _configurationObject = configurationObject;
         }
-
 
         public async Task<Result<LoginResponse>> LoginAsync(LoginRequest request, long userId)
         {
@@ -62,17 +61,27 @@ namespace Template.Application.Services
             {
                 return new InvalidResult<RegisterResponse>("INVALID_REQUEST");
             }
-
-            var user = await _dbContext.Users.FirstOrDefaultAsync(user => user.PhoneNumber == request.PhoneNumber);
-            if (user is not null)
+            User user;
+            try
             {
-                return new InvalidResult<RegisterResponse>(new("ALREADY_EXIST"));
+                user = await _dbContext.Users.FirstOrDefaultAsync(user => user.PhoneNumber == request.PhoneNumber);
+                if (user is not null)
+                {
+                    return new InvalidResult<RegisterResponse>(new("ALREADY_EXIST"));
+                }
+            }
+            catch(Exception ex)
+            {
+                return new InvalidResult<RegisterResponse>(ex.Message);
             }
 
+            CreatePasswordHash(request.Password, out var passwordHash, out var passwordSalt);
             user = new User()
             {
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
                 Profile = new()
                 {
                     FirstName = request.FirstName,
@@ -81,10 +90,6 @@ namespace Template.Application.Services
                 }
             };
 
-            CreatePasswordHash(request.Password, out var passwordHash, out var passwordSalt);
-
-            user.PasswordHash = passwordHash;
-            user.PasswordSalt = passwordSalt;
             user = await _usersService.AddAsync(user);
             return new SuccessResult<RegisterResponse>(new() { Result = false } );
         }

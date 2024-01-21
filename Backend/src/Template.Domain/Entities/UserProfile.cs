@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
-    public class UserProfile : IBaseEntity<long>
+    public class UserProfile : BaseEntity<long>
     {
         [Column(Columns.FirstName)]
         public string FirstName { get; set; }
@@ -15,9 +15,9 @@ namespace Domain.Entities
         [Column(Columns.Patronymic)]
         public string Patronymic { get; set; }
 
-        [ForeignKey(Columns.UserId)]
         [Column(Columns.UserId)]
-        public string UserId { get; set; }
+        [ForeignKey(nameof(User))]
+        public long UserId { get; set; }
         public virtual User User { get; set; }
     }
 }

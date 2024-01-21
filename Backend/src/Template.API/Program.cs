@@ -26,7 +26,9 @@ namespace Template.API
                 runner.MigrateUp();
             }
             else
+            {
                 host.Run();
+            }
         }
     }
 }

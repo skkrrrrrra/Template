@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Domain.Entities
 {
     [Table(Tables.Users)]
-    public class User : IBaseEntity<long>
+    public class User : BaseEntity<long>
     {
         [Column(Columns.PhoneNumber)]
         public string PhoneNumber { get; set; }

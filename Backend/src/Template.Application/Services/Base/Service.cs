@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DamnSmallMapper;
 using Domain.Entities.Base;
-using Template.Persistence;
 using Template.Application.Common.Helpers;
+using Template.Persistence.Context;
 
 namespace Template.Application.Services.Base
 {
-    public class Service<TEntity> : IService<TEntity>
-        where TEntity : IBaseEntity<long>
+    public class Service<TEntity>
+        where TEntity : BaseEntity<long>
     {
         private readonly MainDbContext _dbContext;
 
@@ -39,6 +39,7 @@ namespace Template.Application.Services.Base
             entity.CreatedAt = DateHelper.GetCurrentDateTime();
             entity.UpdatedAt = DateHelper.GetCurrentDateTime();
             await _dbContext.AddAsync(entity);
+            await _dbContext.SaveChangesAsync();
             return entity;
         }
 
