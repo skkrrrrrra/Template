@@ -35,6 +35,11 @@ namespace Template.Application.Services
 
         public async Task<Result<LoginResponse>> LoginAsync(LoginRequest request, long userId)
         {
+            if (string.IsNullOrEmpty(request.Username) == false || string.IsNullOrEmpty(request.Password) == false)
+            {
+                return new InvalidResult<LoginResponse>("INVALID_REQUEST");
+            }
+
             if (request.Username != request.Username)
                 return new InvalidResult<LoginResponse>("NOT_FOUND");
 
@@ -48,6 +53,16 @@ namespace Template.Application.Services
         }
         public async Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest request)
         {
+            if (
+                string.IsNullOrEmpty(request.Password) 
+                || string.IsNullOrEmpty(request.PhoneNumber) 
+                || string.IsNullOrEmpty(request.Username)
+                || string.IsNullOrEmpty(request.Email)
+            )
+            {
+                return new InvalidResult<RegisterResponse>("INVALID_REQUEST");
+            }
+
             var user = await _dbContext.Users.FirstOrDefaultAsync(user => user.PhoneNumber == request.PhoneNumber);
             if (user is not null)
             {
@@ -71,7 +86,7 @@ namespace Template.Application.Services
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
             user = await _usersService.AddAsync(user);
-            return new SuccessResult<RegisterResponse>(new() { Result = false} );
+            return new SuccessResult<RegisterResponse>(new() { Result = false } );
         }
 
         private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
