@@ -8,11 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Template.Domain.Configurations;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.HttpOverrides;
-using Domain.Entities;
-using Domain.Enums;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using Template.Application.Common.Helpers;
+using Template.API.MIddlewares;
 
 namespace Template.API
 {
@@ -109,8 +105,8 @@ namespace Template.API
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+            app.UseGlobalExceptionHandler();
             app.UseHttpsRedirection();
-
             app.UseAuthentication();
             app.UseRouting();
             app.UseAuthorization();

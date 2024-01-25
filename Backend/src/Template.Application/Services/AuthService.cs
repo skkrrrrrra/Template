@@ -3,7 +3,6 @@ using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -39,19 +38,19 @@ namespace Template.Application.Services
         {
             if (string.IsNullOrEmpty(request.Username) == true || string.IsNullOrEmpty(request.Password) == true)
             {
-                return new InvalidResult<LoginResponse>("INVALID_REQUEST");
+                throw new("INVALID_REQUEST");
             }
 
             var user = await _dbContext.Users.FirstOrDefaultAsync(user => user.Username == request.Username);
 
             if(user is null)
             {
-                return new InvalidResult<LoginResponse>("USER_NOT_FOUND");
+                throw new("USER_NOT_FOUND");
             }
 
             if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
-                return new InvalidResult<LoginResponse>("INVALID_PASSWORD");
+                throw new ("INVALID_PASSWORD");
             }
             string token = CreateToken(user);
             return new SuccessResult<LoginResponse>(new() { Token = token });

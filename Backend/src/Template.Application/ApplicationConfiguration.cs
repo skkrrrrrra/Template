@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
+using NLog;
 using Template.Application.Services;
 using Template.Application.Services.Audit;
 using Template.Application.Services.Base;
@@ -15,6 +16,7 @@ namespace Template.Application
             services.AddScoped<IAuditUserProvider, AuditUserProvider>();
             services.AddScoped<Service<User>>();
             services.AddScoped<IAuthService, AuthService>();
+            
         }
     }
 }

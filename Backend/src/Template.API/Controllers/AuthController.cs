@@ -4,7 +4,6 @@ using Template.Application.Models.Results;
 using Template.Application.Requests.Auth;
 using Template.Application.Responses.Auth;
 using Template.Application.Services.Interfaces;
-using Template.Persistence;
 
 namespace Template.API.Controllers
 {
@@ -12,14 +11,10 @@ namespace Template.API.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IAuthService _authService; 
-        private IAuditUserProvider _auditUserProvider;
+        private readonly IAuthService _authService;
 
-        public AuthController(
-            IAuthService authService,
-            IAuditUserProvider auditUserProvider)
+        public AuthController(IAuthService authService)
         {
-            _auditUserProvider = auditUserProvider;
             _authService = authService;
         }
 
@@ -27,54 +22,31 @@ namespace Template.API.Controllers
         [Route("login"), AllowAnonymous]
         public async Task<Result<LoginResponse>> Login(LoginRequest request)
         {
-            try
+            if (request is not null)
             {
-                if (request is not null)
-                {
-                    var result = await _authService.LoginAsync(request);
-                    return result;
-                }
-                return new InvalidResult<LoginResponse>("INVALID_REQUEST");
+                var result = await _authService.LoginAsync(request);
+                return result;
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            throw new("INVALID_REQUEST");
         }
 
         [HttpPost]
         [Route("register"), AllowAnonymous]
         public async Task<Result<RegisterResponse>> Register(RegisterRequest request)
         {
-            try
+            if (request is not null)
             {
-                if (request is not null)
-                {
-                    var result = await _authService.RegisterAsync(request);
-                    return result;
-                }
-                return new InvalidResult<RegisterResponse>("INVALID_REQUEST");
+                var result = await _authService.RegisterAsync(request);
+                return result;
             }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            throw new("INVALID_REQUEST");
         }
-
 
         [HttpGet]
         [Route("check"), Authorize]
         public async Task<Result<bool>> Check()
-        {
-            try
-            {
-                return new SuccessResult<bool>(true);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+        { 
+            return new SuccessResult<bool>(true);
         }
-
     }
 }
