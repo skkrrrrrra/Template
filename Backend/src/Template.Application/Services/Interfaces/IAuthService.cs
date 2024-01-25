@@ -6,7 +6,7 @@ namespace Template.Application.Services.Interfaces
 {
     public interface IAuthService
     {
-        public Task<Result<LoginResponse>> LoginAsync(LoginRequest request, long userId);
+        public Task<Result<LoginResponse>> LoginAsync(LoginRequest request);
         public Task<Result<RegisterResponse>> RegisterAsync(RegisterRequest request);
     }
 }

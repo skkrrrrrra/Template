@@ -16,6 +16,7 @@
         public const string PasswordHash = "password_hash";
         public const string PasswordSalt = "password_salt";
         public const string Role = "role";
+        public const string Username = "username";
 
 
         //user_profile

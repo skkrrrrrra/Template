@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities
 {
+    [Table(Tables.UserProfiles)]
     public class UserProfile : BaseEntity<long>
     {
         [Column(Columns.FirstName)]

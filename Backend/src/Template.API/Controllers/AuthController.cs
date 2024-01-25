@@ -27,17 +27,53 @@ namespace Template.API.Controllers
         [Route("login"), AllowAnonymous]
         public async Task<Result<LoginResponse>> Login(LoginRequest request)
         {
-            var userId = _auditUserProvider.GetUserId().Value;
-            var result = await _authService.LoginAsync(request, userId);
-            return result;
+            try
+            {
+                if (request is not null)
+                {
+                    var result = await _authService.LoginAsync(request);
+                    return result;
+                }
+                return new InvalidResult<LoginResponse>("INVALID_REQUEST");
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         [HttpPost]
         [Route("register"), AllowAnonymous]
         public async Task<Result<RegisterResponse>> Register(RegisterRequest request)
         {
-            var result = await _authService.RegisterAsync(request);
-            return result;
+            try
+            {
+                if (request is not null)
+                {
+                    var result = await _authService.RegisterAsync(request);
+                    return result;
+                }
+                return new InvalidResult<RegisterResponse>("INVALID_REQUEST");
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
+        [HttpGet]
+        [Route("check"), Authorize]
+        public async Task<Result<bool>> Check()
+        {
+            try
+            {
+                return new SuccessResult<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
     }

@@ -10,7 +10,7 @@
     <PackageReference Include="FluentMigrator.Runner" Version="5.0.0" />
     <PackageReference Include="FluentMigrator.Runner.Core" Version="5.0.0" />
     <PackageReference Include="FluentMigrator.Runner.Postgres" Version="5.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.13" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />

@@ -17,7 +17,6 @@ namespace Infrastructure
         {
             return new()
             {
-                Token = _configuration.GetRequiredSection("Token").Value,
                 ConnectionString = _configuration.GetConnectionString("PostgresConnection"),
                 Jwt = new()
                 {

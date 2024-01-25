@@ -36,11 +36,18 @@ namespace Template.Application.Services.Base
 
         public async Task<TEntity> AddAsync(TEntity entity)
         {
-            entity.CreatedAt = DateHelper.GetCurrentDateTime();
-            entity.UpdatedAt = DateHelper.GetCurrentDateTime();
-            await _dbContext.AddAsync(entity);
-            await _dbContext.SaveChangesAsync();
-            return entity;
+            try
+            {
+                entity.CreatedAt = DateHelper.GetCurrentDateTime();
+                entity.UpdatedAt = DateHelper.GetCurrentDateTime();
+                await _dbContext.AddAsync(entity);
+                await _dbContext.SaveChangesAsync();
+                return entity;
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<TEntity> UpdateAsync(TEntity entity)

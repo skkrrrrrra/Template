@@ -2,7 +2,6 @@
 {
     public class ConfigurationObject
     {
-        public required string Token { get; init; }
         public required string ConnectionString { get; init; }
         public required Jwt Jwt { get; init; }
     }

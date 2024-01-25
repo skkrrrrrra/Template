@@ -8,6 +8,9 @@ namespace Domain.Entities
     [Table(Tables.Users)]
     public class User : BaseEntity<long>
     {
+        [Column(Columns.Username)]
+        public string Username { get; set; }
+
         [Column(Columns.PhoneNumber)]
         public string PhoneNumber { get; set; }
 

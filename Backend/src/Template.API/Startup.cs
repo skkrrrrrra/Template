@@ -7,6 +7,12 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Template.Domain.Configurations;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.HttpOverrides;
+using Domain.Entities;
+using Domain.Enums;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Template.Application.Common.Helpers;
 
 namespace Template.API
 {
@@ -29,6 +35,16 @@ namespace Template.API
             PersistenceConfiguration.AddServices(services, configurationObject.ConnectionString);
             ApplicationConfiguration.AddServices(services);
             AddAuthorizationServices(services, configurationObject);
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+                options.KnownNetworks.Clear();
+                options.KnownProxies.Clear();
+            });
+
+            services.AddOptions<Jwt>().BindConfiguration("Jwt");
 
             services.AddControllers();
             services.AddRouting(options => options.LowercaseUrls = true);
@@ -69,28 +85,39 @@ namespace Template.API
                     }
                 });
             });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("MyAllowedOrigins",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:53157")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
         }
 
 
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseForwardedHeaders();
             if (env.IsDevelopment())
             {
+                app.UseCors("MyAllowedOrigins");
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                app.UseCors("MyAllowedOrigins");
             }
-
             app.UseHttpsRedirection();
-            app.UseRouting();
-            app.UseAuthentication();
 
+            app.UseAuthentication();
+            app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(
             endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers(); 
             });
         }
 
@@ -98,7 +125,12 @@ namespace Template.API
         {
             services.AddHttpContextAccessor()
                 .AddAuthorization()
-                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
@@ -109,8 +141,9 @@ namespace Template.API
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = configObject.Jwt.Issuer,
                         ValidAudience = configObject.Jwt.Audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configObject.Jwt.Key))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configObject.Jwt.Key)),
                     };
+                    options.RequireHttpsMetadata = false;
                 });
         }
     }
